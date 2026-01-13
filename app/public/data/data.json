@@ -1,4 +1,50 @@
 [
-    {"name": "Tom", "areaCode": "413", "state": "MA", "message": "How about them Patriots?"},
-    {"name": "Pauline", "areaCode": "270", "state": "KY", "message": "Should we get some fried chicken?"}
+  {
+    "name": "Tom",
+    "areaCode": "413",
+    "state": "MA",
+    "message": "How about them Patriots?"
+  },
+  {
+    "name": "Pauline",
+    "areaCode": "270",
+    "state": "KY",
+    "message": "Should we get some fried chicken?"
+  },
+  {
+    "name": "Diego",
+    "areaCode": "305",
+    "state": "FL",
+    "message": "Do you want to head down to South Beach?"
+  },
+  {
+    "name": "Sasha",
+    "areaCode": "503",
+    "state": "OR",
+    "message": "Is it time to go hiking at Mount Hood?"
+  },
+  {
+    "name": "Marcus",
+    "areaCode": "312",
+    "state": "IL",
+    "message": "Ready to grab a deep-dish pizza downtown?"
+  },
+  {
+    "name": "Chloe",
+    "areaCode": "504",
+    "state": "LA",
+    "message": "Are we catching the parade on Bourbon Street?"
+  },
+  {
+    "name": "Austin",
+    "areaCode": "512",
+    "state": "TX",
+    "message": "Want to check out some live music on 6th Street?"
+  },
+  {
+    "name": "Hana",
+    "areaCode": "808",
+    "state": "HI",
+    "message": "Should we head to the beach for the luau?"
+  }
 ]

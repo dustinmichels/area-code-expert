@@ -269,7 +269,7 @@ const sendMessage = () => {
       <input
         v-model="userInput"
         type="text"
-        placeholder="Guess the state..."
+        placeholder="Guess the state from the area code"
         @keyup.enter="isValidState && sendMessage()"
         class="flex-1 h-[28px] bg-[#fdfdfd] border border-[#aeb5bf] rounded-[14px] mx-[4px] shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)] px-3 text-sm outline-none placeholder-gray-400"
       />
