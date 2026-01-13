@@ -1,5 +1,96 @@
 <script setup lang="ts">
-// Logic can be added here if needed
+import { ref, onMounted, computed } from 'vue'
+import statesData from '../assets/states.json'
+
+interface ContactData {
+  name: string
+  areaCode: string
+  state: string
+  message: string
+}
+
+const contact = ref<ContactData | null>(null)
+const userInput = ref('')
+
+interface Message {
+  id: number
+  text: string
+  isUser: boolean
+}
+
+const messages = ref<Message[]>([])
+
+const states = statesData.states
+
+onMounted(async () => {
+  try {
+    const response = await fetch('/data/data.json')
+    const data = await response.json()
+    if (data && data.length > 0) {
+      const randomIndex = Math.floor(Math.random() * data.length)
+      contact.value = data[randomIndex]
+      if (contact.value) {
+        messages.value = [
+          {
+            id: Date.now(),
+            text: contact.value.message,
+            isUser: false,
+          },
+        ]
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load data:', error)
+  }
+})
+
+const formattedPhone = computed(() => {
+  if (!contact.value) return ''
+  return `${contact.value.areaCode}-XXX-XXXX`
+})
+
+const filteredStates = computed(() => {
+  if (!userInput.value) return []
+  const input = userInput.value.toLowerCase()
+  // Don't show suggestions if the input is exactly a state name
+  if (states.some((s) => s.name.toLowerCase() === input)) return []
+  return states.filter((s) => s.name.toLowerCase().includes(input))
+})
+
+const isValidState = computed(() => {
+  return states.some((s) => s.name.toLowerCase() === userInput.value.toLowerCase())
+})
+
+const selectState = (name: string) => {
+  userInput.value = name
+}
+
+const sendMessage = () => {
+  if (!userInput.value || !contact.value) return
+
+  // 1. Add user message
+  messages.value.push({
+    id: Date.now(),
+    text: userInput.value,
+    isUser: true,
+  })
+
+  // 2. Check correctness
+  const guessedState = states.find((s) => s.name.toLowerCase() === userInput.value.toLowerCase())
+  const isCorrect = guessedState?.code === contact.value.state
+
+  // 3. Add response
+  setTimeout(() => {
+    messages.value.push({
+      id: Date.now() + 1,
+      text: isCorrect ? 'Correct!' : 'Incorrect',
+      isUser: false,
+    })
+  }, 500)
+
+  // 4. Clear input
+  userInput.value = ''
+}
 </script>
 
 <template>
@@ -77,7 +168,7 @@
       <h1
         class="text-[20px] font-bold m-0 [text-shadow:0_-1px_0_rgba(0,0,0,0.6)] flex-1 text-center font-['Helvetica_Neue'] tracking-tight"
       >
-        Trent
+        {{ contact?.name || '...' }}
       </h1>
 
       <!-- Edit Button -->
@@ -95,121 +186,98 @@
         class="bg-[rgba(255,255,255,0.9)] p-[10px] border-b border-[#aeb5bf] text-sm flex items-center z-10 shadow-sm backdrop-blur-sm sticky top-0"
       >
         <h2 class="m-0 font-normal text-[#888] flex gap-2">
-          To: <span class="text-black font-normal">Maria</span>
+          To: <span class="text-black font-normal">{{ formattedPhone }}</span>
         </h2>
       </div>
 
-      <div class="p-[10px] flex flex-col gap-[10px] overflow-y-auto pb-4">
-        <!-- RECEIVED (Grey) Bubble 1 -->
+      <div class="p-[10px] flex flex-col gap-[10px] overflow-y-auto pb-4" v-if="contact">
         <div
-          class="max-w-[75%] w-fit px-[15px] py-[8px] rounded-[15px] text-[15px] leading-tight relative shadow-[0_1px_3px_rgba(0,0,0,0.3)] bg-[linear-gradient(to_bottom,#e5e5ea_0%,#e5e5ea_45%,#d5d5d5_50%,#d5d5d5_100%)] text-black self-start border border-[#c3c3c3] ml-[5px]"
+          v-for="msg in messages"
+          :key="msg.id"
+          class="max-w-[75%] w-fit px-[15px] py-[8px] rounded-[15px] text-[15px] leading-tight relative shadow-[0_1px_3px_rgba(0,0,0,0.3)] text-black border"
+          :class="[
+            msg.isUser
+              ? 'self-end mr-[5px] bg-[linear-gradient(to_bottom,#d9f7be_0%,#d9f7be_45%,#b5e884_50%,#b5e884_100%)] border-[#92c661]'
+              : 'self-start ml-[5px] bg-[linear-gradient(to_bottom,#e5e5ea_0%,#e5e5ea_45%,#d5d5d5_50%,#d5d5d5_100%)] border-[#c3c3c3]',
+          ]"
         >
-          <p class="m-0 font-normal">
-            Nottt much! Just drinking this pube juice my mom bought for me today. Yummy right?(:
-          </p>
-          <!-- Grey Tail -->
-          <div
-            class="absolute bottom-[0px] left-[-7px] w-[20px] h-[16px] bg-[#d5d5d5] rounded-br-[15px] border-b border-l border-[#c3c3c3]"
-          ></div>
-          <div
-            class="absolute bottom-[0px] left-[-4px] w-[10px] h-[16px] bg-[#d5d5d5] rounded-br-[10px] z-10"
-          ></div>
-          <div
-            class="absolute bottom-0 left-[-15px] w-[15px] h-[20px] rounded-br-[20px]"
-            style="background: transparent; box-shadow: 10px 0 0 #d5d5d5"
-          ></div>
-        </div>
+          <p class="m-0 font-normal">{{ msg.text }}</p>
 
-        <!-- SENT (Green) Bubble 1 -->
-        <div
-          class="max-w-[75%] w-fit px-[15px] py-[8px] rounded-[15px] text-[15px] leading-tight relative shadow-[0_1px_3px_rgba(0,0,0,0.3)] bg-[linear-gradient(to_bottom,#dcfbc3_0%,#dcfbc3_45%,#98e558_50%,#87dd40_100%)] text-black self-end border border-[#89ad65] mr-[5px]"
-        >
-          <p class="m-0 font-normal">Not my first choice in juices.. (:</p>
-          <!-- Green Tail -->
+          <!-- Tail (SVG) -->
+          <!-- Received (Left) -->
           <div
-            class="absolute bottom-[0px] right-[-7px] w-[20px] h-[16px] bg-[#87dd40] rounded-bl-[15px] border-b border-r border-[#89ad65]"
-          ></div>
-          <div
-            class="absolute bottom-[0px] right-[-4px] w-[10px] h-[16px] bg-[#87dd40] rounded-bl-[10px] z-10"
-          ></div>
-          <div
-            class="absolute bottom-0 right-[-15px] w-[15px] h-[20px] rounded-bl-[20px]"
-            style="background: transparent; box-shadow: -10px 0 0 #87dd40"
-          ></div>
-        </div>
+            v-if="!msg.isUser"
+            class="absolute bottom-0 left-[-9px] w-[20px] h-[20px] z-[-1] overflow-hidden"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M20 20H0C10 20 18 10 20 0V20Z" fill="#d5d5d5" />
+              <path d="M0 20C10 20 18 10 20 0" stroke="#c3c3c3" stroke-width="1" />
+              <line x1="0" y1="20" x2="20" y2="20" stroke="#c3c3c3" stroke-width="1" />
+            </svg>
+          </div>
 
-        <!-- RECEIVED (Grey) Bubble 2 -->
-        <div
-          class="max-w-[75%] w-fit px-[15px] py-[8px] rounded-[15px] text-[15px] leading-tight relative shadow-[0_1px_3px_rgba(0,0,0,0.3)] bg-[linear-gradient(to_bottom,#e5e5ea_0%,#e5e5ea_45%,#d5d5d5_50%,#d5d5d5_100%)] text-black self-start border border-[#c3c3c3] ml-[5px]"
-        >
-          <p class="m-0 font-normal">
-            Granted. It does taste a little funky but other then thAt i could drink this all day! (:
-          </p>
+          <!-- Sent (Right) -->
           <div
-            class="absolute bottom-[0px] left-[-7px] w-[20px] h-[16px] bg-[#d5d5d5] rounded-br-[15px] border-b border-l border-[#c3c3c3]"
-          ></div>
-          <div
-            class="absolute bottom-[0px] left-[-4px] w-[10px] h-[16px] bg-[#d5d5d5] rounded-br-[10px] z-10"
-          ></div>
-          <div
-            class="absolute bottom-0 left-[-15px] w-[15px] h-[20px] rounded-br-[20px]"
-            style="background: transparent; box-shadow: 10px 0 0 #d5d5d5"
-          ></div>
-        </div>
-
-        <!-- RECEIVED (Grey) Bubble 3 -->
-        <div
-          class="max-w-[75%] w-fit px-[15px] py-[8px] rounded-[15px] text-[15px] leading-tight relative shadow-[0_1px_3px_rgba(0,0,0,0.3)] bg-[linear-gradient(to_bottom,#e5e5ea_0%,#e5e5ea_45%,#d5d5d5_50%,#d5d5d5_100%)] text-black self-start border border-[#c3c3c3] ml-[5px]"
-        >
-          <p class="m-0 font-normal">Dude. I meant prune. I swear.(:</p>
-          <div
-            class="absolute bottom-[0px] left-[-7px] w-[20px] h-[16px] bg-[#d5d5d5] rounded-br-[15px] border-b border-l border-[#c3c3c3]"
-          ></div>
-          <div
-            class="absolute bottom-[0px] left-[-4px] w-[10px] h-[16px] bg-[#d5d5d5] rounded-br-[10px] z-10"
-          ></div>
-          <div
-            class="absolute bottom-0 left-[-15px] w-[15px] h-[20px] rounded-br-[20px]"
-            style="background: transparent; box-shadow: 10px 0 0 #d5d5d5"
-          ></div>
-        </div>
-
-        <!-- SENT (Green) Bubble 2 -->
-        <div
-          class="max-w-[75%] w-fit px-[15px] py-[8px] rounded-[15px] text-[15px] leading-tight relative shadow-[0_1px_3px_rgba(0,0,0,0.3)] bg-[linear-gradient(to_bottom,#dcfbc3_0%,#dcfbc3_45%,#98e558_50%,#87dd40_100%)] text-black self-end border border-[#89ad65] mr-[5px]"
-        >
-          <p class="m-0 font-normal">AHAHA. sure.. Thats what they all say(;</p>
-          <div
-            class="absolute bottom-[0px] right-[-7px] w-[20px] h-[16px] bg-[#87dd40] rounded-bl-[15px] border-b border-r border-[#89ad65]"
-          ></div>
-          <div
-            class="absolute bottom-[0px] right-[-4px] w-[10px] h-[16px] bg-[#87dd40] rounded-bl-[10px] z-10"
-          ></div>
-          <div
-            class="absolute bottom-0 right-[-15px] w-[15px] h-[20px] rounded-bl-[20px]"
-            style="background: transparent; box-shadow: -10px 0 0 #87dd40"
-          ></div>
+            v-else
+            class="absolute bottom-0 right-[-9px] w-[20px] h-[20px] z-[-1] overflow-hidden transform scale-x-[-1]"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M20 20H0C10 20 18 10 20 0V20Z" fill="#b5e884" />
+              <path d="M0 20C10 20 18 10 20 0" stroke="#92c661" stroke-width="1" />
+              <line x1="0" y1="20" x2="20" y2="20" stroke="#92c661" stroke-width="1" />
+            </svg>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Footer / Input Area -->
     <div
-      class="h-[44px] bg-[linear-gradient(to_bottom,#dbe2e9_0%,#b9c2ce_100%)] flex items-center px-[6px] border-t border-[#8e939d] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]"
+      class="h-[44px] bg-[linear-gradient(to_bottom,#dbe2e9_0%,#b9c2ce_100%)] flex items-center px-[6px] border-t border-[#8e939d] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] relative"
     >
       <div
         class="camera-btn w-[26px] h-[22px] bg-[#8e96a5] rounded mr-2 border border-[#767d89]"
       ></div>
-      <!-- Placeholder -->
 
+      <!-- Suggestions List -->
       <div
-        class="flex-1 h-[28px] bg-[#fdfdfd] border border-[#aeb5bf] rounded-[14px] mx-[4px] shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)] flex items-center px-2"
+        v-if="filteredStates.length > 0"
+        class="absolute bottom-full mb-1 left-0 w-full bg-white/90 backdrop-blur-sm border border-gray-400 rounded-t-md max-h-[200px] overflow-y-auto z-50 shadow-lg"
       >
-        <span class="text-gray-400 text-sm">Text Message</span>
+        <div
+          v-for="state in filteredStates"
+          :key="state.code"
+          @mousedown.prevent="selectState(state.name)"
+          class="px-4 py-2 border-b border-gray-200 last:border-0 hover:bg-[#007aff] hover:text-white cursor-pointer text-sm font-medium text-black transition-colors"
+        >
+          {{ state.name }}
+        </div>
       </div>
 
+      <input
+        v-model="userInput"
+        type="text"
+        placeholder="Guess the state..."
+        @keyup.enter="isValidState && sendMessage()"
+        class="flex-1 h-[28px] bg-[#fdfdfd] border border-[#aeb5bf] rounded-[14px] mx-[4px] shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)] px-3 text-sm outline-none placeholder-gray-400"
+      />
+
       <button
-        class="ml-2 border border-[#1d4d80] rounded-[5px] text-white font-bold text-[14px] px-[12px] py-[4px] shadow-[0_1px_0_rgba(255,255,255,0.3)] bg-[linear-gradient(to_bottom,#8ec1f6_0%,#468ccf_50%,#4081c0_51%,#2166b1_100%)] [text-shadow:0_-1px_0_rgba(0,0,0,0.4)] disabled:opacity-50"
+        :disabled="!isValidState"
+        @click="sendMessage"
+        class="ml-2 border border-[#1d4d80] rounded-[5px] text-white font-bold text-[14px] px-[12px] py-[4px] shadow-[0_1px_0_rgba(255,255,255,0.3)] bg-[linear-gradient(to_bottom,#8ec1f6_0%,#468ccf_50%,#4081c0_51%,#2166b1_100%)] [text-shadow:0_-1px_0_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
       >
         Send
       </button>
