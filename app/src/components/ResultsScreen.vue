@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { getDayNumber } from '../utils/gameLogic'
 
 interface ContactData {
   name: string
@@ -36,7 +37,8 @@ const shareResults = () => {
   }
   const emojiString = props.results.map((r) => emojiMap[r] || '⚪').join('')
 
-  const text = `AreaCodeExpert #1 | ${formattedDuration.value}\n${emojiString}\nhttps://area-code-expert.netlify.app/`
+  const dayNumber = getDayNumber()
+  const text = `Area Code Hero #${dayNumber} | ${formattedDuration.value}\n${emojiString}\nhttps://area-code-hero.netlify.app/`
 
   if (navigator.share) {
     navigator.share({
