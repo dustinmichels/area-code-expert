@@ -3,7 +3,7 @@ import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import statesData from '../assets/states.json'
 
 // Define emits
-const emit = defineEmits(['back'])
+const emit = defineEmits(['back', 'next-round'])
 
 interface ContactData {
   name: string
@@ -15,6 +15,7 @@ interface ContactData {
 
 const props = defineProps<{
   contact: ContactData
+  roundsLeft?: number
 }>()
 
 const userInput = ref('')
@@ -29,7 +30,7 @@ interface Message {
 const messages = ref<Message[]>([])
 const isTyping = ref(false)
 const chatContainer = ref<HTMLElement | null>(null)
-const guessCount = ref(0)
+
 const isGameOver = ref(false)
 
 const scrollToBottom = async () => {
@@ -62,17 +63,11 @@ const formattedPhone = computed(() => {
 })
 
 const revealAnswer = () => {
-  setTimeout(() => {
-    isTyping.value = true
-    setTimeout(() => {
-      isTyping.value = false
-      messages.value.push({
-        id: Date.now() + 2,
-        text: `${props.contact.areaCode} is the area code for ${props.contact.cities}, ${props.contact.state}`,
-        isUser: false,
-      })
-    }, 1500)
-  }, 500)
+  messages.value.push({
+    id: Date.now() + 2,
+    text: `${props.contact.areaCode} is the area code for ${props.contact.cities}, ${props.contact.state}`,
+    isUser: false,
+  })
 }
 
 const sendMessage = () => {
@@ -98,36 +93,23 @@ const sendMessage = () => {
   // 5. Add response
   setTimeout(() => {
     isTyping.value = false
+    isGameOver.value = true // Game End after 1 guess
 
     if (isCorrect) {
-      isGameOver.value = true
       messages.value.push({
         id: Date.now() + 1,
         text: 'Correct!',
         isUser: false,
       })
-      revealAnswer()
     } else {
-      guessCount.value++
-      let responseText = ''
-
-      if (guessCount.value >= 3) {
-        responseText = 'Incorrect! 3/3. Too bad.'
-        isGameOver.value = true
-      } else {
-        responseText = `Incorrect! ${guessCount.value}/3`
-      }
-
       messages.value.push({
         id: Date.now() + 1,
-        text: responseText,
+        text: 'Incorrect!',
         isUser: false,
       })
-
-      if (guessCount.value >= 3) {
-        revealAnswer()
-      }
     }
+
+    revealAnswer()
   }, 1500)
 }
 </script>
@@ -171,11 +153,25 @@ const sendMessage = () => {
     <div class="flex-1 flex flex-col relative overflow-hidden bg-[#cbd2d9]">
       <!-- Contact Bar -->
       <div
-        class="bg-[rgba(255,255,255,0.9)] p-[10px] border-b border-[#aeb5bf] text-sm flex items-center z-10 shadow-sm backdrop-blur-sm sticky top-0"
+        class="bg-[rgba(255,255,255,0.9)] p-[10px] border-b border-[#aeb5bf] text-sm flex items-center justify-between z-10 shadow-sm backdrop-blur-sm sticky top-0"
       >
         <h2 class="m-0 font-normal text-[#888] flex gap-2">
           To: <span class="text-black font-normal">{{ formattedPhone }}</span>
         </h2>
+
+        <!-- Indicator Lights -->
+        <div v-if="props.roundsLeft !== undefined" class="flex gap-1.5">
+          <div
+            v-for="i in 4"
+            :key="i"
+            class="w-3 h-3 rounded-full border border-gray-400 transition-colors duration-300"
+            :class="
+              i <= props.roundsLeft
+                ? 'bg-yellow-400 shadow-[0_0_4px_rgba(250,204,21,0.6)]'
+                : 'bg-gray-300 shadow-inner'
+            "
+          ></div>
+        </div>
       </div>
 
       <div
@@ -268,6 +264,16 @@ const sendMessage = () => {
             </svg>
           </div>
         </div>
+
+        <!-- Next Round Button -->
+        <div v-if="isGameOver" class="flex justify-center mt-4 mb-2 animate-fade-in">
+          <button
+            @click="emit('next-round')"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transform transition active:scale-95 flex items-center gap-2"
+          >
+            Next Round <span class="text-xl">→</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -339,6 +345,22 @@ const sendMessage = () => {
   }
   40% {
     transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

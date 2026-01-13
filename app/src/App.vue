@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import PhoneShell from './components/PhoneShell.vue'
 import ChatScreen from './components/ChatScreen.vue'
 import HomeScreen from './components/HomeScreen.vue'
@@ -21,7 +21,20 @@ interface RawContactData {
 }
 
 const contacts = ref<RawContactData[]>([])
-const activeContact = ref<ContactData | null>(null)
+const gameQueue = ref<ContactData[]>([])
+const currentRoundIndex = ref(0) // 0 to 3
+
+const activeContact = computed(() => {
+  if (gameQueue.value.length > currentRoundIndex.value) {
+    return gameQueue.value[currentRoundIndex.value]
+  }
+  return null
+})
+
+const roundsLeft = computed(() => {
+  if (!activeContact.value) return 0
+  return 4 - currentRoundIndex.value
+})
 
 onMounted(async () => {
   try {
@@ -36,31 +49,42 @@ onMounted(async () => {
 })
 
 const goHome = () => {
-  activeContact.value = null
+  gameQueue.value = []
+  currentRoundIndex.value = 0
 }
 
 const handleStartGame = () => {
   if (contacts.value.length > 0) {
-    const randomIndex = Math.floor(Math.random() * contacts.value.length)
-    // Pick a random name
-    const rawContact = contacts.value[randomIndex]
-    if (!rawContact) return
+    // Shuffle contacts and pick 4
+    const shuffled = [...contacts.value].sort(() => 0.5 - Math.random())
+    const selectedRaw = shuffled.slice(0, 4)
 
-    const randomNameIndex = Math.floor(Math.random() * namesData.names.length)
-    const randomName = namesData.names[randomNameIndex] || 'Unknown'
+    gameQueue.value = selectedRaw.map((rawContact) => {
+      const randomNameIndex = Math.floor(Math.random() * namesData.names.length)
+      const randomName = namesData.names[randomNameIndex] || 'Unknown'
 
-    // Pick a random message
-    const messages = rawContact.messages || []
-    const randomMessage =
-      messages.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : 'Hello!'
+      const messages = rawContact.messages || []
+      const randomMessage =
+        (messages.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : 'Hello!') ||
+        'Hello!'
 
-    activeContact.value = {
-      areaCode: rawContact.areaCode,
-      state: rawContact.state,
-      cities: rawContact.cities,
-      message: randomMessage,
-      name: randomName,
-    }
+      return {
+        areaCode: rawContact.areaCode,
+        state: rawContact.state,
+        cities: rawContact.cities,
+        message: randomMessage,
+        name: randomName,
+      }
+    })
+
+    currentRoundIndex.value = 0
+  }
+}
+
+const handleNextRound = () => {
+  currentRoundIndex.value++
+  if (currentRoundIndex.value >= 4) {
+    goHome()
   }
 }
 </script>
@@ -68,7 +92,14 @@ const handleStartGame = () => {
 <template>
   <main>
     <PhoneShell>
-      <ChatScreen v-if="activeContact" :contact="activeContact" @back="goHome" />
+      <ChatScreen
+        v-if="activeContact"
+        :key="activeContact.areaCode"
+        :contact="activeContact"
+        :rounds-left="roundsLeft"
+        @back="goHome"
+        @next-round="handleNextRound"
+      />
       <HomeScreen v-else @start="handleStartGame" />
     </PhoneShell>
   </main>
