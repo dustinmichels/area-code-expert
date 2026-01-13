@@ -1,50 +1,252 @@
 [
   {
-    "areaCode": "413",
-    "state": "MA",
-    "cities": "Pittsfield, Northampton, Westfield",
-    "message": "Have you been to Mass MOCA?"
+    "areaCode": "212",
+    "state": "NY",
+    "cities": "New York City (Manhattan)",
+    "messages": [
+      "Wanna grab a slice in Times Square? It's prob overpriced but idc",
+      "just walked thru Central Park and omg the fall colors r insane",
+      "Do u think if I yell loud enough the Statue of Liberty will hear me?"
+    ]
   },
   {
-    "areaCode": "270",
-    "state": "KY",
-    "cities": "Henderson, Owensboro, Paducah",
-    "message": "Should we get some fried chicken?"
-  },
-  {
-    "areaCode": "305",
-    "state": "FL",
-    "cities": "Hialeah, Miami, Miami Beach",
-    "message": "Do you want to head down to South Beach?"
-  },
-  {
-    "areaCode": "503",
-    "state": "OR",
-    "cities": "Gresham, Beaver, Salem",
-    "message": "Is it time to go hiking at Mount Hood?"
+    "areaCode": "213",
+    "state": "CA",
+    "cities": "Los Angeles",
+    "messages": [
+      "I swear I just saw someone famous at Whole Foods but idk who lol",
+      "Traffic on the 405 is making me regret every life choice rn",
+      "Wanna hike Runyon Canyon tmrw? The views r worth the sweat"
+    ]
   },
   {
     "areaCode": "312",
     "state": "IL",
     "cities": "Chicago",
-    "message": "Ready to grab a deep-dish pizza downtown?"
+    "messages": [
+      "Deep dish or thin crust 2nite? This is important",
+      "The wind off Lake Michigan just destroyed my hair completely",
+      "omg the Bean is so shiny I can see my whole face in it"
+    ]
   },
   {
-    "areaCode": "504",
-    "state": "LA",
-    "cities": "New Orleans, Metairie, Kenner",
-    "message": "Are we catching the parade on Bourbon Street?"
+    "areaCode": "415",
+    "state": "CA",
+    "cities": "San Francisco, Marin County",
+    "messages": [
+      "My calves are DYING from these hills send help",
+      "Wanna bike across the Golden Gate Bridge? I'll bring snacks",
+      "just saw a sea lion at Pier 39 and it was judging me I swear"
+    ]
   },
   {
-    "areaCode": "512",
+    "areaCode": "617",
+    "state": "MA",
+    "cities": "Boston, Cambridge",
+    "messages": [
+      "Walking the Freedom Trail tmrw, u in?",
+      "This chowdah is actually life-changing ngl",
+      "omg Harvard students everywhere and I feel so underdressed"
+    ]
+  },
+  {
+    "areaCode": "202",
+    "state": "DC",
+    "cities": "Washington, D.C.",
+    "messages": [
+      "Do u wanna see the monuments 2nite? They're all lit up",
+      "I'm eating on the National Mall and feeling v patriotic rn",
+      "just walked past the White House and there's like 50 tourists taking selfies lol"
+    ]
+  },
+  {
+    "areaCode": "305",
+    "state": "FL",
+    "cities": "Miami, Miami Beach, Key West",
+    "messages": [
+      "Beach day tmrw? I need to work on my tan b4 it's 2 l8",
+      "omg the Cuban sandwich I just ate was EVERYTHING",
+      "Ocean Drive is so pretty at sunset I can't even"
+    ]
+  },
+  {
+    "areaCode": "404",
+    "state": "GA",
+    "cities": "Atlanta",
+    "messages": [
+      "Wanna hit up the Beltline l8r? I need my steps in",
+      "This sweet tea is sweeter than my grandma's compliments",
+      "omg I'm at the aquarium and the whale shark is MASSIVE"
+    ]
+  },
+  {
+    "areaCode": "214",
     "state": "TX",
-    "cities": "Austin",
-    "message": "Want to check out some live music on 6th Street?"
+    "cities": "Dallas, Plano, Richardson",
+    "messages": [
+      "Everything really IS bigger in Texas including my food coma rn",
+      "Do u wanna check out Dealey Plaza? It's kinda heavy but historic",
+      "just bought a cowboy hat ironically but now I'm into it"
+    ]
+  },
+  {
+    "areaCode": "713",
+    "state": "TX",
+    "cities": "Houston",
+    "messages": [
+      "Space Center Houston tmrw? I wanna feel like an astronaut",
+      "This humidity is NO JOKE my hair is officially ruined",
+      "omg the rodeo was actually so fun?? Didn't expect that"
+    ]
+  },
+  {
+    "areaCode": "215",
+    "state": "PA",
+    "cities": "Philadelphia",
+    "messages": [
+      "Cheesesteak debate: Geno's or Pat's? This is serious",
+      "just saw the Liberty Bell and it's smaller than I thought lol",
+      "Running up the Rocky steps tmrw who's w me?"
+    ]
+  },
+  {
+    "areaCode": "313",
+    "state": "MI",
+    "cities": "Detroit",
+    "messages": [
+      "Motown Museum was actually incredible I'm not gonna lie",
+      "Do u wanna check out some street art in Corktown?",
+      "omg the auto show has so many cool cars I wanna drive them all"
+    ]
+  },
+  {
+    "areaCode": "412",
+    "state": "PA",
+    "cities": "Pittsburgh",
+    "messages": [
+      "These hills r trying to k*ll me but the view is worth it",
+      "Wanna grab a Primanti Bros sandwich? It has fries IN it",
+      "just counted like 20 bridges and I'm still not done wtf"
+    ]
+  },
+  {
+    "areaCode": "314",
+    "state": "MO",
+    "cities": "St. Louis",
+    "messages": [
+      "Going up the Arch tmrw, hopefully I don't get vertigo lol",
+      "This BBQ is making me question every food choice I've made b4",
+      "omg the City Museum is like a playground for adults I'm obsessed"
+    ]
+  },
+  {
+    "areaCode": "408",
+    "state": "CA",
+    "cities": "San Jose, Santa Clara, Sunnyvale",
+    "messages": [
+      "Everyone here works in tech and I feel v behind",
+      "Do u wanna tour some start-ups? Might get free swag",
+      "just saw the weirdest gadget at the Tech Museum ngl kinda want it"
+    ]
+  },
+  {
+    "areaCode": "503",
+    "state": "OR",
+    "cities": "Portland, Salem",
+    "messages": [
+      "This coffee is so good I might cry actual tears",
+      "Wanna hit up Powell's Books? I could get lost there 4ever",
+      "omg I just saw someone riding a unicycle casually like it's normal here"
+    ]
+  },
+  {
+    "areaCode": "206",
+    "state": "WA",
+    "cities": "Seattle, Mercer Island",
+    "messages": [
+      "Going up the Space Needle tmrw, the view is gonna b sick",
+      "It's been raining for 3 days straight but honestly it's kinda cozy?",
+      "omg Pike Place Market had a fish-throwing show and I screamed"
+    ]
+  },
+  {
+    "areaCode": "602",
+    "state": "AZ",
+    "cities": "Phoenix",
+    "messages": [
+      "It's 115 degrees rn how do ppl live here",
+      "Wanna hike Camelback Mountain b4 sunrise? It's cooler then",
+      "just saw a cactus taller than my house I'm shook"
+    ]
+  },
+  {
+    "areaCode": "702",
+    "state": "NV",
+    "cities": "Las Vegas, Henderson",
+    "messages": [
+      "Lost $20 at blackjack but won free drinks so basically even?",
+      "Do u wanna see a Cirque show 2nite? They're supposed to b amazing",
+      "omg the Strip at night is like daylight but w more neon"
+    ]
+  },
+  {
+    "areaCode": "818",
+    "state": "CA",
+    "cities": "Los Angeles (San Fernando Valley)",
+    "messages": [
+      "just drove past Warner Bros and I SWEAR I saw a movie set",
+      "Traffic in the Valley is worse than I thought possible",
+      "Wanna grab In-N-Out? I'm craving animal style fries rn"
+    ]
+  },
+  {
+    "areaCode": "716",
+    "state": "NY",
+    "cities": "Buffalo, Niagara Falls",
+    "messages": [
+      "Niagara Falls is SO LOUD I can't hear myself think",
+      "These buffalo wings r actually from Buffalo mind = blown",
+      "Do u wanna take the Maid of the Mist boat? We'll get soaked tho"
+    ]
+  },
+  {
+    "areaCode": "901",
+    "state": "TN",
+    "cities": "Memphis",
+    "messages": [
+      "Beale Street at night hits different ngl",
+      "omg I'm at Graceland and Elvis had STYLE",
+      "This BBQ is so good I might never eat anything else again"
+    ]
   },
   {
     "areaCode": "808",
     "state": "HI",
-    "cities": "Honolulu",
-    "message": "Should we head to the beach for the luau?"
+    "cities": "Honolulu, Maui, Big Island",
+    "messages": [
+      "just tried surfing and fell off like 50 times but it was fun",
+      "Do u wanna watch the sunset at Waikiki? It's supposed to b perfect",
+      "omg I had poke for breakfast and I'm never going back 2 cereal"
+    ]
+  },
+  {
+    "areaCode": "330",
+    "state": "OH",
+    "cities": "Akron, Canton, Youngstown",
+    "messages": [
+      "Did u know Akron is where they invented rubber? Random but cool",
+      "Wanna check out the Pro Football Hall of Fame? I'm feeling sporty",
+      "omg this small town energy is exactly what I needed rn"
+    ]
+  },
+  {
+    "areaCode": "970",
+    "state": "CO",
+    "cities": "Fort Collins, Grand Junction",
+    "messages": [
+      "The mountains here r making me feel v small and inspired",
+      "Do u wanna go brewery hopping? Fort Collins has like 20",
+      "just breathed in the fresh air and my lungs r so happy they might cry"
+    ]
   }
 ]

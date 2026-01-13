@@ -17,7 +17,7 @@ interface RawContactData {
   areaCode: string
   state: string
   cities: string
-  message: string
+  messages: string[]
 }
 
 const contacts = ref<RawContactData[]>([])
@@ -49,8 +49,16 @@ const handleStartGame = () => {
     const randomNameIndex = Math.floor(Math.random() * namesData.names.length)
     const randomName = namesData.names[randomNameIndex] || 'Unknown'
 
+    // Pick a random message
+    const messages = rawContact.messages || []
+    const randomMessage =
+      messages.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : 'Hello!'
+
     activeContact.value = {
-      ...rawContact,
+      areaCode: rawContact.areaCode,
+      state: rawContact.state,
+      cities: rawContact.cities,
+      message: randomMessage,
       name: randomName,
     }
   }

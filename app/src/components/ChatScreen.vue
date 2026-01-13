@@ -29,6 +29,8 @@ interface Message {
 const messages = ref<Message[]>([])
 const isTyping = ref(false)
 const chatContainer = ref<HTMLElement | null>(null)
+const guessCount = ref(0)
+const isGameOver = ref(false)
 
 const scrollToBottom = async () => {
   await nextTick()
@@ -59,10 +61,22 @@ const formattedPhone = computed(() => {
   return `${props.contact.areaCode}-XXX-XXXX`
 })
 
-// Removed filteredStates and selectState logic as we are switching to a select element
+const revealAnswer = () => {
+  setTimeout(() => {
+    isTyping.value = true
+    setTimeout(() => {
+      isTyping.value = false
+      messages.value.push({
+        id: Date.now() + 2,
+        text: `${props.contact.areaCode} is the area code for ${props.contact.cities}, ${props.contact.state}`,
+        isUser: false,
+      })
+    }, 1500)
+  }, 500)
+}
 
 const sendMessage = () => {
-  if (!userInput.value) return
+  if (!userInput.value || isGameOver.value) return
 
   // 1. Add user message
   messages.value.push({
@@ -84,24 +98,35 @@ const sendMessage = () => {
   // 5. Add response
   setTimeout(() => {
     isTyping.value = false
-    messages.value.push({
-      id: Date.now() + 1,
-      text: isCorrect ? 'Correct!' : 'Incorrect',
-      isUser: false,
-    })
 
     if (isCorrect) {
-      setTimeout(() => {
-        isTyping.value = true
-        setTimeout(() => {
-          isTyping.value = false
-          messages.value.push({
-            id: Date.now() + 2,
-            text: `${props.contact.areaCode} is the area code for ${props.contact.cities}, ${props.contact.state}`,
-            isUser: false,
-          })
-        }, 1500)
-      }, 500)
+      isGameOver.value = true
+      messages.value.push({
+        id: Date.now() + 1,
+        text: 'Correct!',
+        isUser: false,
+      })
+      revealAnswer()
+    } else {
+      guessCount.value++
+      let responseText = ''
+
+      if (guessCount.value >= 3) {
+        responseText = 'Incorrect! 3/3. Too bad.'
+        isGameOver.value = true
+      } else {
+        responseText = `Incorrect! ${guessCount.value}/3`
+      }
+
+      messages.value.push({
+        id: Date.now() + 1,
+        text: responseText,
+        isUser: false,
+      })
+
+      if (guessCount.value >= 3) {
+        revealAnswer()
+      }
     }
   }, 1500)
 }
@@ -254,7 +279,8 @@ const sendMessage = () => {
         <select
           v-model="userInput"
           @keyup.enter="sendMessage"
-          class="w-full h-[28px] bg-[#fdfdfd] border border-[#aeb5bf] rounded-[14px] shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)] px-3 text-sm outline-none appearance-none"
+          :disabled="isGameOver"
+          class="w-full h-[28px] bg-[#fdfdfd] border border-[#aeb5bf] rounded-[14px] shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)] px-3 text-sm outline-none appearance-none disabled:opacity-50 disabled:bg-gray-100"
         >
           <option value="" disabled selected>Guess the state...</option>
           <option v-for="state in states" :key="state.code" :value="state.name">
@@ -282,7 +308,7 @@ const sendMessage = () => {
       </div>
 
       <button
-        :disabled="!userInput"
+        :disabled="!userInput || isGameOver"
         @click="sendMessage"
         class="ml-2 border border-[#1d4d80] rounded-[5px] text-white font-bold text-[14px] px-[12px] py-[4px] shadow-[0_1px_0_rgba(255,255,255,0.3)] bg-[linear-gradient(to_bottom,#8ec1f6_0%,#468ccf_50%,#4081c0_51%,#2166b1_100%)] [text-shadow:0_-1px_0_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
       >
