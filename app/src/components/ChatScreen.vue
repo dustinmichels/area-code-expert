@@ -16,6 +16,7 @@ interface ContactData {
 const props = defineProps<{
   contact: ContactData
   roundResults: string[]
+  startTime: number
 }>()
 
 const userInput = ref('')
@@ -35,19 +36,21 @@ const isGameOver = ref(false)
 const hintUsed = ref(false)
 
 // Timer Logic
-const elapsedTime = ref(0)
+const now = ref(Date.now())
 let timerInterval: ReturnType<typeof setInterval> | null = null
 
 const formattedTimer = computed(() => {
-  const m = Math.floor(elapsedTime.value / 60)
-  const s = elapsedTime.value % 60
+  if (!props.startTime) return '0:00'
+  const elapsedSeconds = Math.floor((now.value - props.startTime) / 1000)
+  const m = Math.floor(elapsedSeconds / 60)
+  const s = elapsedSeconds % 60
   return `${m}:${s.toString().padStart(2, '0')}`
 })
 
 const startTimer = () => {
   stopTimer()
   timerInterval = setInterval(() => {
-    elapsedTime.value++
+    now.value = Date.now()
   }, 1000)
 }
 
@@ -147,7 +150,6 @@ const sendMessage = () => {
   setTimeout(() => {
     isTyping.value = false
     isGameOver.value = true // Game End after 1 guess
-    stopTimer()
 
     if (isCorrect) {
       messages.value.push({

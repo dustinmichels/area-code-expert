@@ -12,6 +12,7 @@ interface ContactData {
 const props = defineProps<{
   results: string[]
   history: ContactData[]
+  duration: number
 }>()
 
 const emit = defineEmits(['home'])
@@ -19,6 +20,13 @@ const emit = defineEmits(['home'])
 const correctCount = computed(() => props.results.filter((r) => r === 'green').length)
 const hintCount = computed(() => props.results.filter((r) => r === 'yellow').length)
 const incorrectCount = computed(() => props.results.filter((r) => r === 'red').length)
+
+const formattedDuration = computed(() => {
+  const totalSeconds = Math.floor(props.duration / 1000)
+  const m = Math.floor(totalSeconds / 60)
+  const s = totalSeconds % 60
+  return `${m}m ${s}s`
+})
 
 const shareResults = () => {
   const emojiMap: Record<string, string> = {
@@ -28,7 +36,7 @@ const shareResults = () => {
   }
   const emojiString = props.results.map((r) => emojiMap[r] || '⚪').join('')
 
-  const text = `AreaCodeExpert #1\n${emojiString}\nhttps://area-code-expert.netlify.app/`
+  const text = `AreaCodeExpert #1\n${emojiString}\nTime: ${formattedDuration.value}\nhttps://area-code-expert.netlify.app/`
 
   if (navigator.share) {
     navigator.share({
@@ -76,6 +84,7 @@ const shareResults = () => {
         class="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/50 w-full max-w-sm"
       >
         <h2 class="text-2xl font-bold text-gray-800 mb-2">Good game!</h2>
+        <div class="text-3xl font-bold text-blue-600 mb-4">{{ formattedDuration }}</div>
         <p class="text-gray-700 leading-relaxed">
           You got
           <span class="font-bold text-green-600">{{ correctCount }} correct (without a hint)</span>,

@@ -27,6 +27,9 @@ const currentRoundIndex = ref(0) // 0 to 3
 const roundResults = ref<string[]>([])
 const showResults = ref(false)
 
+const gameStartTime = ref<number>(0)
+const gameDuration = ref<number>(0)
+
 const activeContact = computed(() => {
   if (gameQueue.value.length > currentRoundIndex.value) {
     return gameQueue.value[currentRoundIndex.value]
@@ -51,6 +54,8 @@ const goHome = () => {
   currentRoundIndex.value = 0
   roundResults.value = []
   showResults.value = false
+  gameStartTime.value = 0
+  gameDuration.value = 0
 }
 
 const handleStartGame = () => {
@@ -79,6 +84,8 @@ const handleStartGame = () => {
 
     currentRoundIndex.value = 0
     roundResults.value = []
+    gameStartTime.value = Date.now()
+    gameDuration.value = 0
   }
 }
 
@@ -91,6 +98,10 @@ const handleNextRound = () => {
 
 const handleRoundComplete = (result: string) => {
   roundResults.value.push(result)
+
+  if (roundResults.value.length === 4) {
+    gameDuration.value = Date.now() - gameStartTime.value
+  }
 }
 </script>
 
@@ -102,6 +113,7 @@ const handleRoundComplete = (result: string) => {
         :key="activeContact.areaCode"
         :contact="activeContact"
         :round-results="roundResults"
+        :start-time="gameStartTime"
         @back="goHome"
         @next-round="handleNextRound"
         @round-complete="handleRoundComplete"
@@ -110,6 +122,7 @@ const handleRoundComplete = (result: string) => {
         v-else-if="showResults"
         :results="roundResults"
         :history="gameQueue"
+        :duration="gameDuration"
         @home="goHome"
       />
       <HomeScreen v-else @start="handleStartGame" />
