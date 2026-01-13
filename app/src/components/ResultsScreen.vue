@@ -36,7 +36,7 @@ const shareResults = () => {
   }
   const emojiString = props.results.map((r) => emojiMap[r] || '⚪').join('')
 
-  const text = `AreaCodeExpert #1\n${emojiString}\nTime: ${formattedDuration.value}\nhttps://area-code-expert.netlify.app/`
+  const text = `AreaCodeExpert #1 | ${formattedDuration.value}\n${emojiString}\nhttps://area-code-expert.netlify.app/`
 
   if (navigator.share) {
     navigator.share({
