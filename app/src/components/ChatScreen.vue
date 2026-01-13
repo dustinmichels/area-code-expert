@@ -119,6 +119,13 @@ const indicatorLights = computed(() => {
   return lights
 })
 
+const buttonText = computed(() => {
+  if (!props.isPractice && props.roundResults.length >= 4) {
+    return 'See Results'
+  }
+  return 'Next Round'
+})
+
 const revealAnswer = () => {
   messages.value.push({
     id: Date.now() + 2,
@@ -329,7 +336,7 @@ const sendMessage = () => {
             @click="emit('next-round')"
             class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transform transition active:scale-95 flex items-center gap-2"
           >
-            Next Round <span class="text-xl">→</span>
+            {{ buttonText }} <span class="text-xl">→</span>
           </button>
         </div>
       </div>

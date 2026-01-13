@@ -1,5 +1,110 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
+import gsap from 'gsap'
+
 const emit = defineEmits(['daily', 'practice'])
+
+const bubbleContainer = ref<HTMLElement | null>(null)
+let intervalId: ReturnType<typeof setInterval> | null = null
+let lastColumnIndex = -1
+
+const phrases = ['omg', 'c u l8r', 'ily', 'u up?', 'ttyl', 'tysm']
+const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8']
+
+const spawnBubble = () => {
+  if (!bubbleContainer.value) return
+
+  const el = document.createElement('div')
+  el.textContent = phrases[Math.floor(Math.random() * phrases.length)] || ''
+
+  // Random styling
+  const color = colors[Math.floor(Math.random() * colors.length)] || '#000'
+  const fontSize = 14 + Math.random() * 8
+  // Determine position using columns to prevent overlap
+  const numColumns = 5
+  const colWidth = 100 / numColumns
+
+  // Pick a column different from the last one
+  let colIndex = Math.floor(Math.random() * numColumns)
+  while (colIndex === lastColumnIndex) {
+    colIndex = Math.floor(Math.random() * numColumns)
+  }
+  lastColumnIndex = colIndex
+
+  // Calculate X position within the chosen column (with some padding)
+  // e.g., if colWidth is 20, column 0 is 0-20. We want maybe 2-18 range.
+  const padding = 2
+  const minX = colIndex * colWidth + padding
+  const maxX = (colIndex + 1) * colWidth - padding
+  const startX = minX + Math.random() * (maxX - minX)
+  // Start mainly from bottom, but some random Y variance to feel natural
+  const startY = Math.random() * 50 // 0 to 50px from bottom constraint
+  const startRotation = Math.random() * 30 - 15
+
+  // Apply styles
+  el.style.position = 'absolute'
+  el.style.left = `${startX}%`
+  el.style.bottom = `${40 + Math.random() * 60}px` // Start strictly below or at bottom edge
+  el.style.transform = `translateX(-50%) rotate(${startRotation}deg)`
+  el.style.backgroundColor = color
+  el.style.color = '#fff'
+  el.style.fontFamily = 'ui-rounded, "Comic Sans MS", "Chalkboard SE", sans-serif'
+  el.style.fontWeight = 'bold'
+  el.style.fontSize = `${fontSize}px`
+  el.style.padding = '6px 14px'
+  el.style.borderRadius = '20px'
+  el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)'
+  el.style.opacity = '0'
+  el.style.whiteSpace = 'nowrap'
+  el.style.pointerEvents = 'none'
+  el.style.zIndex = '5' // Still low, but ensuring visibility if container z-index is managed
+
+  bubbleContainer.value.appendChild(el)
+
+  // Animation timeline
+  const tl = gsap.timeline({
+    onComplete: () => {
+      if (el.parentNode) {
+        el.parentNode.removeChild(el)
+      }
+    },
+  })
+
+  // Float up and fade logic
+  const duration = 5 + Math.random() * 4 // slow and subtle
+  const floatDistance = 150 + Math.random() * 150 // pixels up
+
+  tl.to(el, {
+    opacity: 0.7,
+    y: -40,
+    duration: 1,
+    ease: 'power1.out',
+  }).to(
+    el,
+    {
+      y: -floatDistance,
+      opacity: 0,
+      rotation: startRotation + (Math.random() * 30 - 15),
+      duration: duration - 1,
+      ease: 'none',
+    },
+    '>',
+  )
+}
+
+onMounted(() => {
+  // Spawn a few immediately so it's not empty
+  spawnBubble()
+  setTimeout(spawnBubble, 500)
+  intervalId = setInterval(spawnBubble, 1500)
+})
+
+onUnmounted(() => {
+  if (intervalId) clearInterval(intervalId)
+  if (bubbleContainer.value) {
+    gsap.killTweensOf(bubbleContainer.value.children)
+  }
+})
 </script>
 
 <template>
@@ -9,6 +114,12 @@ const emit = defineEmits(['daily', 'practice'])
     <!-- Background Pattern Effect (Optional subtle overlay to match shell) -->
     <div
       class="absolute inset-0 pointer-events-none opacity-50 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"
+    ></div>
+
+    <!-- Floating Bubbles Container -->
+    <div
+      ref="bubbleContainer"
+      class="absolute top-0 left-0 w-full h-2/5 overflow-hidden pointer-events-none z-0"
     ></div>
 
     <!-- Title Container -->
