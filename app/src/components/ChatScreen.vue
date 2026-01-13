@@ -337,7 +337,7 @@ const sendMessage = () => {
 
     <!-- Footer / Input Area -->
     <div
-      class="h-[44px] bg-[linear-gradient(to_bottom,#dbe2e9_0%,#b9c2ce_100%)] flex items-center px-[6px] border-t border-[#8e939d] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] relative shrink-0"
+      class="pt-[8px] pb-[28px] bg-[linear-gradient(to_bottom,#dbe2e9_0%,#b9c2ce_100%)] flex items-center px-[6px] border-t border-[#8e939d] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] relative shrink-0"
     >
       <div class="relative flex-1 mx-[4px]">
         <select
