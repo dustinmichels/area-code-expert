@@ -4,14 +4,24 @@ import PhoneShell from './PhoneShell.vue'
 import ChatScreen from './ChatScreen.vue'
 import HomeScreen from './HomeScreen.vue'
 
+import namesData from '../assets/names.json'
+
 interface ContactData {
   name: string
   areaCode: string
   state: string
+  cities: string
   message: string
 }
 
-const contacts = ref<ContactData[]>([])
+interface RawContactData {
+  areaCode: string
+  state: string
+  cities: string
+  message: string
+}
+
+const contacts = ref<RawContactData[]>([])
 const activeContact = ref<ContactData | null>(null)
 
 onMounted(async () => {
@@ -33,7 +43,17 @@ const goHome = () => {
 const handleStartGame = () => {
   if (contacts.value.length > 0) {
     const randomIndex = Math.floor(Math.random() * contacts.value.length)
-    activeContact.value = contacts.value[randomIndex] || null
+    // Pick a random name
+    const rawContact = contacts.value[randomIndex]
+    if (!rawContact) return
+
+    const randomNameIndex = Math.floor(Math.random() * namesData.names.length)
+    const randomName = namesData.names[randomNameIndex] || 'Unknown'
+
+    activeContact.value = {
+      ...rawContact,
+      name: randomName,
+    }
   }
 }
 

@@ -1,50 +1,50 @@
 [
   {
-    "name": "Tom",
     "areaCode": "413",
     "state": "MA",
-    "message": "How about them Patriots?"
+    "cities": "Pittsfield, Northampton, Westfield",
+    "message": "Have you been to Mass MOCA?"
   },
   {
-    "name": "Pauline",
     "areaCode": "270",
     "state": "KY",
+    "cities": "Henderson, Owensboro, Paducah",
     "message": "Should we get some fried chicken?"
   },
   {
-    "name": "Diego",
     "areaCode": "305",
     "state": "FL",
+    "cities": "Hialeah, Miami, Miami Beach",
     "message": "Do you want to head down to South Beach?"
   },
   {
-    "name": "Sasha",
     "areaCode": "503",
     "state": "OR",
+    "cities": "Gresham, Beaver, Salem",
     "message": "Is it time to go hiking at Mount Hood?"
   },
   {
-    "name": "Marcus",
     "areaCode": "312",
     "state": "IL",
+    "cities": "Chicago",
     "message": "Ready to grab a deep-dish pizza downtown?"
   },
   {
-    "name": "Chloe",
     "areaCode": "504",
     "state": "LA",
+    "cities": "New Orleans, Metairie, Kenner",
     "message": "Are we catching the parade on Bourbon Street?"
   },
   {
-    "name": "Austin",
     "areaCode": "512",
     "state": "TX",
+    "cities": "Austin",
     "message": "Want to check out some live music on 6th Street?"
   },
   {
-    "name": "Hana",
     "areaCode": "808",
     "state": "HI",
+    "cities": "Honolulu",
     "message": "Should we head to the beach for the luau?"
   }
 ]

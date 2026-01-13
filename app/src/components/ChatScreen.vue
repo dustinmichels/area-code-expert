@@ -9,6 +9,7 @@ interface ContactData {
   name: string
   areaCode: string
   state: string
+  cities: string
   message: string
 }
 
@@ -46,21 +47,7 @@ const formattedPhone = computed(() => {
   return `${props.contact.areaCode}-XXX-XXXX`
 })
 
-const filteredStates = computed(() => {
-  if (!userInput.value) return []
-  const input = userInput.value.toLowerCase()
-  // Don't show suggestions if the input is exactly a state name
-  if (states.some((s) => s.name.toLowerCase() === input)) return []
-  return states.filter((s) => s.name.toLowerCase().includes(input))
-})
-
-const isValidState = computed(() => {
-  return states.some((s) => s.name.toLowerCase() === userInput.value.toLowerCase())
-})
-
-const selectState = (name: string) => {
-  userInput.value = name
-}
+// Removed filteredStates and selectState logic as we are switching to a select element
 
 const sendMessage = () => {
   if (!userInput.value) return
@@ -83,6 +70,16 @@ const sendMessage = () => {
       text: isCorrect ? 'Correct!' : 'Incorrect',
       isUser: false,
     })
+
+    if (isCorrect) {
+      setTimeout(() => {
+        messages.value.push({
+          id: Date.now() + 2,
+          text: `${props.contact.areaCode} is the area code for ${props.contact.cities}, ${props.contact.state}`,
+          isUser: false,
+        })
+      }, 1500)
+    }
   }, 500)
 
   // 4. Clear input
@@ -108,7 +105,7 @@ const sendMessage = () => {
         <div
           class="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.35)_0%,rgba(255,255,255,0.1)_50%,rgba(255,255,255,0)_50%)] -z-10 [clip-path:polygon(12px_0,100%_0,100%_100%,12px_100%,0_50%)] rounded-r-[5px]"
         ></div>
-        Messages
+        Home
       </button>
 
       <h1
@@ -203,35 +200,39 @@ const sendMessage = () => {
     <div
       class="h-[44px] bg-[linear-gradient(to_bottom,#dbe2e9_0%,#b9c2ce_100%)] flex items-center px-[6px] border-t border-[#8e939d] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] relative shrink-0"
     >
-      <div
-        class="camera-btn w-[26px] h-[22px] bg-[#8e96a5] rounded mr-2 border border-[#767d89]"
-      ></div>
-
-      <!-- Suggestions List -->
-      <div
-        v-if="filteredStates.length > 0"
-        class="absolute bottom-full mb-1 left-0 w-full bg-white/90 backdrop-blur-sm border border-gray-400 rounded-t-md max-h-[200px] overflow-y-auto z-50 shadow-lg"
-      >
-        <div
-          v-for="state in filteredStates"
-          :key="state.code"
-          @mousedown.prevent="selectState(state.name)"
-          class="px-4 py-2 border-b border-gray-200 last:border-0 hover:bg-[#007aff] hover:text-white cursor-pointer text-sm font-medium text-black transition-colors"
+      <div class="relative flex-1 mx-[4px]">
+        <select
+          v-model="userInput"
+          @keyup.enter="sendMessage"
+          class="w-full h-[28px] bg-[#fdfdfd] border border-[#aeb5bf] rounded-[14px] shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)] px-3 text-sm outline-none appearance-none"
         >
-          {{ state.name }}
+          <option value="" disabled selected>Guess the state...</option>
+          <option v-for="state in states" :key="state.code" :value="state.name">
+            {{ state.name }}
+          </option>
+        </select>
+        <!-- Custom arrow indicator -->
+        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+          <svg
+            width="10"
+            height="6"
+            viewBox="0 0 10 6"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M1 1L5 5L9 1"
+              stroke="#8e8e93"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
         </div>
       </div>
 
-      <input
-        v-model="userInput"
-        type="text"
-        placeholder="Guess the state from the area code"
-        @keyup.enter="isValidState && sendMessage()"
-        class="flex-1 h-[28px] bg-[#fdfdfd] border border-[#aeb5bf] rounded-[14px] mx-[4px] shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)] px-3 text-sm outline-none placeholder-gray-400"
-      />
-
       <button
-        :disabled="!isValidState"
+        :disabled="!userInput"
         @click="sendMessage"
         class="ml-2 border border-[#1d4d80] rounded-[5px] text-white font-bold text-[14px] px-[12px] py-[4px] shadow-[0_1px_0_rgba(255,255,255,0.3)] bg-[linear-gradient(to_bottom,#8ec1f6_0%,#468ccf_50%,#4081c0_51%,#2166b1_100%)] [text-shadow:0_-1px_0_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
       >

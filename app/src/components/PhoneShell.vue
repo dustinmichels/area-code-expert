@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
-const currentTime = computed(() => {
-  // Simple time mock or use real time
+const currentTime = ref('')
+
+const updateTime = () => {
   const now = new Date()
   let hours = now.getHours()
   const minutes = now.getMinutes()
@@ -10,7 +11,18 @@ const currentTime = computed(() => {
   hours = hours % 12
   hours = hours ? hours : 12 // the hour '0' should be '12'
   const minutesStr = minutes < 10 ? '0' + minutes : minutes
-  return `${hours}:${minutesStr} ${ampm}`
+  currentTime.value = `${hours}:${minutesStr} ${ampm}`
+}
+
+let timer: ReturnType<typeof setInterval>
+
+onMounted(() => {
+  updateTime()
+  timer = setInterval(updateTime, 1000)
+})
+
+onUnmounted(() => {
+  if (timer) clearInterval(timer)
 })
 </script>
 
@@ -60,11 +72,14 @@ const currentTime = computed(() => {
         >
         <span class="wifi-icon"></span>
       </div>
-      <div class="font-bold text-[#1f1f1f] drop-shadow-[0_1px_0_rgba(255,255,255,0.5)]">
-        {{ currentTime }}
-      </div>
-      <div class="battery">
-        <span class="battery-icon"></span>
+
+      <div class="flex items-center gap-2">
+        <div class="font-bold text-[#1f1f1f] drop-shadow-[0_1px_0_rgba(255,255,255,0.5)]">
+          {{ currentTime }}
+        </div>
+        <div class="battery">
+          <span class="battery-icon"></span>
+        </div>
       </div>
     </div>
 
