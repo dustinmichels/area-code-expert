@@ -23,17 +23,13 @@ interface RawContactData {
 const contacts = ref<RawContactData[]>([])
 const gameQueue = ref<ContactData[]>([])
 const currentRoundIndex = ref(0) // 0 to 3
+const roundResults = ref<string[]>([])
 
 const activeContact = computed(() => {
   if (gameQueue.value.length > currentRoundIndex.value) {
     return gameQueue.value[currentRoundIndex.value]
   }
   return null
-})
-
-const roundsLeft = computed(() => {
-  if (!activeContact.value) return 0
-  return 4 - currentRoundIndex.value
 })
 
 onMounted(async () => {
@@ -51,6 +47,7 @@ onMounted(async () => {
 const goHome = () => {
   gameQueue.value = []
   currentRoundIndex.value = 0
+  roundResults.value = []
 }
 
 const handleStartGame = () => {
@@ -78,6 +75,7 @@ const handleStartGame = () => {
     })
 
     currentRoundIndex.value = 0
+    roundResults.value = []
   }
 }
 
@@ -86,6 +84,10 @@ const handleNextRound = () => {
   if (currentRoundIndex.value >= 4) {
     goHome()
   }
+}
+
+const handleRoundComplete = (result: string) => {
+  roundResults.value.push(result)
 }
 </script>
 
@@ -96,9 +98,10 @@ const handleNextRound = () => {
         v-if="activeContact"
         :key="activeContact.areaCode"
         :contact="activeContact"
-        :rounds-left="roundsLeft"
+        :round-results="roundResults"
         @back="goHome"
         @next-round="handleNextRound"
+        @round-complete="handleRoundComplete"
       />
       <HomeScreen v-else @start="handleStartGame" />
     </PhoneShell>

@@ -3,7 +3,7 @@ import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import statesData from '../assets/states.json'
 
 // Define emits
-const emit = defineEmits(['back', 'next-round'])
+const emit = defineEmits(['back', 'next-round', 'round-complete'])
 
 interface ContactData {
   name: string
@@ -15,7 +15,7 @@ interface ContactData {
 
 const props = defineProps<{
   contact: ContactData
-  roundsLeft?: number
+  roundResults: string[]
 }>()
 
 const userInput = ref('')
@@ -32,6 +32,14 @@ const isTyping = ref(false)
 const chatContainer = ref<HTMLElement | null>(null)
 
 const isGameOver = ref(false)
+const hintUsed = ref(false)
+
+const revealHint = (msg: Message) => {
+  if (msg.isBlurred) {
+    msg.isBlurred = false
+    hintUsed.value = true
+  }
+}
 
 const scrollToBottom = async () => {
   await nextTick()
@@ -60,6 +68,22 @@ onMounted(() => {
 
 const formattedPhone = computed(() => {
   return `${props.contact.areaCode}-XXX-XXXX`
+})
+
+const indicatorLights = computed(() => {
+  const lights = []
+  for (let i = 0; i < 4; i++) {
+    if (i < props.roundResults.length) {
+      const res = props.roundResults[i]
+      if (res === 'green') lights.push('bg-green-500 shadow-[0_0_4px_rgba(34,197,94,0.6)]')
+      else if (res === 'yellow') lights.push('bg-yellow-400 shadow-[0_0_4px_rgba(250,204,21,0.6)]')
+      else if (res === 'red') lights.push('bg-red-500 shadow-[0_0_4px_rgba(239,68,68,0.6)]')
+      else lights.push('bg-gray-300 shadow-inner')
+    } else {
+      lights.push('bg-gray-300 shadow-inner')
+    }
+  }
+  return lights
 })
 
 const revealAnswer = () => {
@@ -101,12 +125,14 @@ const sendMessage = () => {
         text: 'Correct!',
         isUser: false,
       })
+      emit('round-complete', hintUsed.value ? 'yellow' : 'green')
     } else {
       messages.value.push({
         id: Date.now() + 1,
         text: 'Incorrect!',
         isUser: false,
       })
+      emit('round-complete', 'red')
     }
 
     revealAnswer()
@@ -160,16 +186,12 @@ const sendMessage = () => {
         </h2>
 
         <!-- Indicator Lights -->
-        <div v-if="props.roundsLeft !== undefined" class="flex gap-1.5">
+        <div class="flex gap-1.5">
           <div
-            v-for="i in 4"
-            :key="i"
+            v-for="(result, index) in indicatorLights"
+            :key="index"
             class="w-3 h-3 rounded-full border border-gray-400 transition-colors duration-300"
-            :class="
-              i <= props.roundsLeft
-                ? 'bg-yellow-400 shadow-[0_0_4px_rgba(250,204,21,0.6)]'
-                : 'bg-gray-300 shadow-inner'
-            "
+            :class="result"
           ></div>
         </div>
       </div>
@@ -189,7 +211,7 @@ const sendMessage = () => {
               : 'self-start ml-[5px] bg-[linear-gradient(to_bottom,#e5e5ea_0%,#e5e5ea_45%,#d5d5d5_50%,#d5d5d5_100%)] border-[#c3c3c3]',
             msg.isBlurred ? 'cursor-pointer' : '',
           ]"
-          @click="msg.isBlurred && (msg.isBlurred = false)"
+          @click="revealHint(msg)"
         >
           <div
             v-if="msg.isBlurred"
