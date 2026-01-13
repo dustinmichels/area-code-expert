@@ -69,8 +69,9 @@ const shareResults = () => {
       >
         <h2 class="text-2xl font-bold text-gray-800 mb-2">Good game!</h2>
         <p class="text-gray-700 leading-relaxed">
-          You got <span class="font-bold text-green-600">{{ correctCount }} correct</span>,
-          <span class="font-bold text-yellow-600">{{ hintCount }} correct with a guess</span>, and
+          You got
+          <span class="font-bold text-green-600">{{ correctCount }} correct (without a hint)</span>,
+          <span class="font-bold text-yellow-600">{{ hintCount }} correct (with a hint)</span>, and
           <span class="font-bold text-red-600">{{ incorrectCount }} incorrect</span>.
         </p>
       </div>
