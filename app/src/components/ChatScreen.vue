@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import statesData from '../assets/states.json'
 
 // Define emits
@@ -27,6 +27,18 @@ interface Message {
 }
 
 const messages = ref<Message[]>([])
+const isTyping = ref(false)
+const chatContainer = ref<HTMLElement | null>(null)
+
+const scrollToBottom = async () => {
+  await nextTick()
+  if (chatContainer.value) {
+    chatContainer.value.scrollTop = chatContainer.value.scrollHeight
+  }
+}
+
+watch(messages, scrollToBottom, { deep: true })
+watch(isTyping, scrollToBottom)
 
 const states = statesData.states
 
@@ -63,8 +75,15 @@ const sendMessage = () => {
   const guessedState = states.find((s) => s.name.toLowerCase() === userInput.value.toLowerCase())
   const isCorrect = guessedState?.code === props.contact.state
 
-  // 3. Add response
+  // 3. Clear input
+  userInput.value = ''
+
+  // 4. Show typing indicators
+  isTyping.value = true
+
+  // 5. Add response
   setTimeout(() => {
+    isTyping.value = false
     messages.value.push({
       id: Date.now() + 1,
       text: isCorrect ? 'Correct!' : 'Incorrect',
@@ -73,17 +92,18 @@ const sendMessage = () => {
 
     if (isCorrect) {
       setTimeout(() => {
-        messages.value.push({
-          id: Date.now() + 2,
-          text: `${props.contact.areaCode} is the area code for ${props.contact.cities}, ${props.contact.state}`,
-          isUser: false,
-        })
-      }, 1500)
+        isTyping.value = true
+        setTimeout(() => {
+          isTyping.value = false
+          messages.value.push({
+            id: Date.now() + 2,
+            text: `${props.contact.areaCode} is the area code for ${props.contact.cities}, ${props.contact.state}`,
+            isUser: false,
+          })
+        }, 1500)
+      }, 500)
     }
-  }, 500)
-
-  // 4. Clear input
-  userInput.value = ''
+  }, 1500)
 }
 </script>
 
@@ -133,7 +153,11 @@ const sendMessage = () => {
         </h2>
       </div>
 
-      <div class="p-[10px] flex flex-col gap-[10px] overflow-y-auto pb-4" v-if="props.contact">
+      <div
+        class="p-[10px] flex flex-col gap-[10px] overflow-y-auto pb-4"
+        v-if="props.contact"
+        ref="chatContainer"
+      >
         <div
           v-for="msg in messages"
           :key="msg.id"
@@ -193,6 +217,32 @@ const sendMessage = () => {
             </svg>
           </div>
         </div>
+
+        <!-- Typing Indicator -->
+        <div
+          v-if="isTyping"
+          class="max-w-[75%] w-fit px-[15px] py-[12px] rounded-[15px] relative shadow-[0_1px_3px_rgba(0,0,0,0.3)] bg-[linear-gradient(to_bottom,#e5e5ea_0%,#e5e5ea_45%,#d5d5d5_50%,#d5d5d5_100%)] border border-[#c3c3c3] self-start ml-[5px]"
+        >
+          <div class="typing-dots flex gap-[4px]">
+            <span class="w-[6px] h-[6px] bg-[#8e8e93] rounded-full"></span>
+            <span class="w-[6px] h-[6px] bg-[#8e8e93] rounded-full"></span>
+            <span class="w-[6px] h-[6px] bg-[#8e8e93] rounded-full"></span>
+          </div>
+          <!-- Tail for Typing Indicator -->
+          <div class="absolute bottom-0 left-[-9px] w-[20px] h-[20px] z-[-1] overflow-hidden">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M20 20H0C10 20 18 10 20 0V20Z" fill="#d5d5d5" />
+              <path d="M0 20C10 20 18 10 20 0" stroke="#c3c3c3" stroke-width="1" />
+              <line x1="0" y1="20" x2="20" y2="20" stroke="#c3c3c3" stroke-width="1" />
+            </svg>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -241,3 +291,28 @@ const sendMessage = () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.typing-dots span {
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.typing-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+</style>
