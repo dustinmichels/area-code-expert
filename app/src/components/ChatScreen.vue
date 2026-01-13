@@ -89,7 +89,7 @@ const indicatorLights = computed(() => {
 const revealAnswer = () => {
   messages.value.push({
     id: Date.now() + 2,
-    text: `${props.contact.areaCode} is the area code for ${props.contact.cities}, ${props.contact.state}`,
+    text: `${props.contact.areaCode} is the area code for ${props.contact.cities.replace(/, /g, ' / ')}, ${props.contact.state}`,
     isUser: false,
   })
 }
