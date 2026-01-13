@@ -38,7 +38,7 @@ const shareResults = () => {
   const emojiString = props.results.map((r) => emojiMap[r] || '⚪').join('')
 
   const dayNumber = getDayNumber()
-  const text = `Area Code Hero #${dayNumber} | ${formattedDuration.value}\n${emojiString}\nhttps://area-code-hero.netlify.app/`
+  const text = `Area Code Hero #${dayNumber} | ${formattedDuration.value}\n${emojiString}\nhttps://area-code-expert.netlify.app/`
 
   if (navigator.share) {
     navigator.share({

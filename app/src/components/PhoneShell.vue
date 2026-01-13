@@ -28,7 +28,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="relative w-full max-w-[405px] h-[750px] font-sans text-black flex flex-col mx-auto border-[14px] border-[#1a1a1a] rounded-[50px] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden bg-[#cbd2d9]"
+    class="relative w-full md:max-w-[405px] h-[100dvh] md:h-[750px] font-sans text-black flex flex-col mx-auto md:border-[14px] md:border-[#1a1a1a] md:rounded-[50px] md:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden bg-[#cbd2d9]"
     style="
       background-color: #cbd2d9;
       background-image:
@@ -49,7 +49,7 @@ onUnmounted(() => {
   >
     <!-- Status Bar -->
     <div
-      class="h-6 flex justify-between items-center px-5 text-xs border-b border-[#7d8591] bg-gradient-to-b from-[#dbe2e9] to-[#b9c2ce] shrink-0 z-10"
+      class="hidden md:flex h-6 justify-between items-center px-5 text-xs border-b border-[#7d8591] bg-gradient-to-b from-[#dbe2e9] to-[#b9c2ce] shrink-0 z-10"
     >
       <div class="flex items-center gap-[2px]">
         <div
@@ -90,7 +90,7 @@ onUnmounted(() => {
 
     <!-- Home Indicator (visual only) -->
     <div
-      class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-black/20 rounded-full pointer-events-none"
+      class="hidden md:block absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-black/20 rounded-full pointer-events-none"
     ></div>
   </div>
 </template>
