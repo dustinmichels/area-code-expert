@@ -8,7 +8,25 @@ const bubbleContainer = ref<HTMLElement | null>(null)
 let intervalId: ReturnType<typeof setInterval> | null = null
 let lastColumnIndex = -1
 
-const phrases = ['omg', 'c u l8r', 'ily', 'u up?', 'ttyl', 'tysm']
+const phrases = [
+  'omg',
+  'c u',
+  'l8r',
+  'ily',
+  'u up?',
+  'ttyl',
+  'gr8',
+  'tysm',
+  'brb',
+  'jk',
+  'how r u?',
+  'WTF',
+  'ngl',
+  '💕',
+  '😡',
+  '😂',
+  '😘',
+]
 const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8']
 
 const spawnBubble = () => {
@@ -129,7 +147,7 @@ onUnmounted(() => {
       >
         Area Code<br />Expert
       </h1>
-      <p class="mt-2 text-[#56687e] font-medium text-base">How well do u know ur area codes?</p>
+      <p class="mt-2 text-[#56687e] font-medium text-base">how well do u know ur area codes?</p>
     </div>
 
     <!-- Buttons -->
