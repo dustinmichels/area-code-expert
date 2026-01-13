@@ -18,7 +18,7 @@ const emit = defineEmits(['start'])
       >
         Area Code<br />Guesser
       </h1>
-      <p class="mt-2 text-[#56687e] font-medium text-sm">Can you identify the state?</p>
+      <p class="mt-2 text-[#56687e] font-medium text-sm">How well do u know ur area codes?</p>
     </div>
 
     <!-- Start Button -->
