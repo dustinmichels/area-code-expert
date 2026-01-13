@@ -5,6 +5,7 @@ import ChatScreen from './components/ChatScreen.vue'
 import HomeScreen from './components/HomeScreen.vue'
 import ResultsScreen from './components/ResultsScreen.vue'
 import namesData from './assets/names.json'
+import { mulberry32, generateDailySeed } from './utils/seededRandom'
 
 interface ContactData {
   name: string
@@ -23,9 +24,10 @@ interface RawContactData {
 
 const contacts = ref<RawContactData[]>([])
 const gameQueue = ref<ContactData[]>([])
-const currentRoundIndex = ref(0) // 0 to 3
+const currentRoundIndex = ref(0) // 0 to 3 (or infinite)
 const roundResults = ref<string[]>([])
 const showResults = ref(false)
+const gameMode = ref<'daily' | 'practice'>('daily')
 
 const gameStartTime = ref<number>(0)
 const gameDuration = ref<number>(0)
@@ -58,29 +60,43 @@ const goHome = () => {
   gameDuration.value = 0
 }
 
-const handleStartGame = () => {
+const generateContact = (rawContact: RawContactData, rng: () => number): ContactData => {
+  const randomNameIndex = Math.floor(rng() * namesData.names.length)
+  const randomName = namesData.names[randomNameIndex] || 'Unknown'
+
+  const messages = rawContact.messages || []
+  const randomMessage =
+    (messages.length > 0 ? messages[Math.floor(rng() * messages.length)] : 'Hello!') || 'Hello!'
+
+  return {
+    areaCode: rawContact.areaCode,
+    state: rawContact.state,
+    cities: rawContact.cities,
+    message: randomMessage,
+    name: randomName,
+  }
+}
+
+const handleStartGame = (seed?: number) => {
   if (contacts.value.length > 0) {
-    // Shuffle contacts and pick 4
-    const shuffled = [...contacts.value].sort(() => 0.5 - Math.random())
+    // Determine RNG source
+    let rng = Math.random
+    if (typeof seed === 'number') {
+      rng = mulberry32(seed)
+    }
+
+    // Shuffle contacts and pick 4 using Fisher-Yates for consistency
+    const shuffled = [...contacts.value]
+    let m = shuffled.length
+    while (m) {
+      const i = Math.floor(rng() * m--)
+      const t = shuffled[m]!
+      shuffled[m] = shuffled[i]!
+      shuffled[i] = t
+    }
     const selectedRaw = shuffled.slice(0, 4)
 
-    gameQueue.value = selectedRaw.map((rawContact) => {
-      const randomNameIndex = Math.floor(Math.random() * namesData.names.length)
-      const randomName = namesData.names[randomNameIndex] || 'Unknown'
-
-      const messages = rawContact.messages || []
-      const randomMessage =
-        (messages.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : 'Hello!') ||
-        'Hello!'
-
-      return {
-        areaCode: rawContact.areaCode,
-        state: rawContact.state,
-        cities: rawContact.cities,
-        message: randomMessage,
-        name: randomName,
-      }
-    })
+    gameQueue.value = selectedRaw.map((raw) => generateContact(raw, rng))
 
     currentRoundIndex.value = 0
     roundResults.value = []
@@ -89,10 +105,34 @@ const handleStartGame = () => {
   }
 }
 
+const handleDailyChallenge = () => {
+  gameMode.value = 'daily'
+  const seed = generateDailySeed()
+  handleStartGame(seed)
+}
+
+const handlePracticeMode = () => {
+  gameMode.value = 'practice'
+  handleStartGame() // uses Math.random
+}
+
 const handleNextRound = () => {
   currentRoundIndex.value++
-  if (currentRoundIndex.value >= 4) {
-    showResults.value = true
+
+  if (gameMode.value === 'practice') {
+    // In practice mode, add another random contact if we ran out (or just always keep buffer)
+    // currently we started with 4. Let's just add one more each time we advance to keep it infinite
+    if (contacts.value.length > 0) {
+      const rng = Math.random
+      const randomIdx = Math.floor(rng() * contacts.value.length)
+      const raw = contacts.value[randomIdx]
+      gameQueue.value.push(generateContact(raw!, rng))
+    }
+  } else {
+    // Daily mode: strict 4 rounds
+    if (currentRoundIndex.value >= 4) {
+      showResults.value = true
+    }
   }
 }
 
@@ -110,10 +150,11 @@ const handleRoundComplete = (result: string) => {
     <PhoneShell>
       <ChatScreen
         v-if="activeContact"
-        :key="activeContact.areaCode"
+        :key="activeContact.areaCode + '-' + currentRoundIndex"
         :contact="activeContact"
         :round-results="roundResults"
         :start-time="gameStartTime"
+        :is-practice="gameMode === 'practice'"
         @back="goHome"
         @next-round="handleNextRound"
         @round-complete="handleRoundComplete"
@@ -125,7 +166,7 @@ const handleRoundComplete = (result: string) => {
         :duration="gameDuration"
         @home="goHome"
       />
-      <HomeScreen v-else @start="handleStartGame" />
+      <HomeScreen v-else @daily="handleDailyChallenge" @practice="handlePracticeMode" />
     </PhoneShell>
   </main>
 </template>

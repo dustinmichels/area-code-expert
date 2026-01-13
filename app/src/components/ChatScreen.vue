@@ -17,6 +17,7 @@ const props = defineProps<{
   contact: ContactData
   roundResults: string[]
   startTime: number
+  isPractice?: boolean
 }>()
 
 const userInput = ref('')
@@ -218,7 +219,10 @@ const sendMessage = () => {
         </h2>
 
         <!-- Indicator Lights -->
-        <div class="flex gap-1.5">
+        <div v-if="isPractice" class="text-xs font-bold text-gray-500 uppercase tracking-wide">
+          Practice Mode
+        </div>
+        <div v-else class="flex gap-1.5">
           <div
             v-for="(result, index) in indicatorLights"
             :key="index"

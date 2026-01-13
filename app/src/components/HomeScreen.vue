@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const emit = defineEmits(['start'])
+const emit = defineEmits(['daily', 'practice'])
 </script>
 
 <template>
@@ -21,21 +21,32 @@ const emit = defineEmits(['start'])
       <p class="mt-2 text-[#56687e] font-medium text-sm">How well do u know ur area codes?</p>
     </div>
 
-    <!-- Start Button -->
-    <button
-      @click="emit('start')"
-      class="z-10 group relative px-8 py-3 bg-[#007aff] hover:bg-[#0069d9] active:scale-95 transition-all duration-200 rounded-full shadow-[0_4px_14px_0_rgba(0,118,255,0.39)] overflow-hidden"
-    >
-      <span
-        class="relative z-20 font-bold text-white text-lg tracking-wide group-hover:tracking-wider transition-all"
-        >START</span
+    <!-- Buttons -->
+    <div class="z-10 flex flex-col gap-4">
+      <button
+        @click="emit('daily')"
+        class="group relative px-8 py-3 bg-[#007aff] hover:bg-[#0069d9] active:scale-95 transition-all duration-200 rounded-full shadow-[0_4px_14px_0_rgba(0,118,255,0.39)] overflow-hidden w-64"
       >
+        <span
+          class="relative z-20 font-bold text-white text-lg tracking-wide group-hover:tracking-wider transition-all"
+          >DAILY CHALLENGE</span
+        >
+        <!-- Shine effect -->
+        <div
+          class="absolute top-0 -left-[100%] w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-25deg] animate-[shine_3s_infinite] group-hover:animate-none"
+        ></div>
+      </button>
 
-      <!-- Shine effect -->
-      <div
-        class="absolute top-0 -left-[100%] w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-25deg] animate-[shine_3s_infinite] group-hover:animate-none"
-      ></div>
-    </button>
+      <button
+        @click="emit('practice')"
+        class="group relative px-8 py-3 bg-[#34c759] hover:bg-[#2db84c] active:scale-95 transition-all duration-200 rounded-full shadow-[0_4px_14px_0_rgba(52,199,89,0.39)] overflow-hidden w-64"
+      >
+        <span
+          class="relative z-20 font-bold text-white text-lg tracking-wide group-hover:tracking-wider transition-all"
+          >PRACTICE MODE</span
+        >
+      </button>
+    </div>
 
     <!-- Footer decoration (optional) -->
     <div class="absolute bottom-8 text-[#8e96a5] text-xs font-mono">v1.0</div>
