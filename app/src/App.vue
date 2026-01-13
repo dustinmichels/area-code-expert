@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import PhoneShell from './components/PhoneShell.vue'
 import ChatScreen from './components/ChatScreen.vue'
 import HomeScreen from './components/HomeScreen.vue'
+import ResultsScreen from './components/ResultsScreen.vue'
 import namesData from './assets/names.json'
 
 interface ContactData {
@@ -24,6 +25,7 @@ const contacts = ref<RawContactData[]>([])
 const gameQueue = ref<ContactData[]>([])
 const currentRoundIndex = ref(0) // 0 to 3
 const roundResults = ref<string[]>([])
+const showResults = ref(false)
 
 const activeContact = computed(() => {
   if (gameQueue.value.length > currentRoundIndex.value) {
@@ -48,6 +50,7 @@ const goHome = () => {
   gameQueue.value = []
   currentRoundIndex.value = 0
   roundResults.value = []
+  showResults.value = false
 }
 
 const handleStartGame = () => {
@@ -82,7 +85,7 @@ const handleStartGame = () => {
 const handleNextRound = () => {
   currentRoundIndex.value++
   if (currentRoundIndex.value >= 4) {
-    goHome()
+    showResults.value = true
   }
 }
 
@@ -102,6 +105,12 @@ const handleRoundComplete = (result: string) => {
         @back="goHome"
         @next-round="handleNextRound"
         @round-complete="handleRoundComplete"
+      />
+      <ResultsScreen
+        v-else-if="showResults"
+        :results="roundResults"
+        :history="gameQueue"
+        @home="goHome"
       />
       <HomeScreen v-else @start="handleStartGame" />
     </PhoneShell>
