@@ -1,3 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  --color-header-blue: #738aba;
+  --color-bg-grey: #cbd2d9;
+  --color-sender-bubble: #e5e5e5;
+  --color-user-bubble: #60db35;
+}
+
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
   --vt-c-white: #ffffff;
