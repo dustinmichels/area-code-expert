@@ -28,7 +28,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="w-full max-w-[375px] h-[667px] font-sans text-black flex flex-col mx-auto border border-[#ccc] shadow-[0_0_20px_rgba(0,0,0,0.2)]"
+    class="relative w-full max-w-[405px] h-[750px] font-sans text-black flex flex-col mx-auto border-[14px] border-[#1a1a1a] rounded-[50px] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden bg-[#cbd2d9]"
     style="
       background-color: #cbd2d9;
       background-image:
@@ -49,7 +49,7 @@ onUnmounted(() => {
   >
     <!-- Status Bar -->
     <div
-      class="h-5 flex justify-between items-center px-[5px] text-xs border-b border-[#7d8591] bg-gradient-to-b from-[#dbe2e9] to-[#b9c2ce] shrink-0"
+      class="h-6 flex justify-between items-center px-5 text-xs border-b border-[#7d8591] bg-gradient-to-b from-[#dbe2e9] to-[#b9c2ce] shrink-0 z-10"
     >
       <div class="flex items-center gap-[2px]">
         <div
@@ -87,6 +87,11 @@ onUnmounted(() => {
     <div class="flex-1 flex flex-col relative overflow-hidden">
       <slot />
     </div>
+
+    <!-- Home Indicator (visual only) -->
+    <div
+      class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-black/20 rounded-full pointer-events-none"
+    ></div>
   </div>
 </template>
 

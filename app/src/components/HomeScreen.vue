@@ -14,11 +14,11 @@ const emit = defineEmits(['daily', 'practice'])
     <!-- Title Container -->
     <div class="z-10 text-center mb-12">
       <h1
-        class="font-['Helvetica_Neue'] font-bold text-[32px] leading-tight text-[#2f3640] drop-shadow-sm px-4"
+        class="font-['Helvetica_Neue'] font-bold text-[42px] leading-tight text-[#2f3640] drop-shadow-sm px-4"
       >
-        Area Code<br />Guesser
+        Area Code<br />Expert
       </h1>
-      <p class="mt-2 text-[#56687e] font-medium text-sm">How well do u know ur area codes?</p>
+      <p class="mt-2 text-[#56687e] font-medium text-base">How well do u know ur area codes?</p>
     </div>
 
     <!-- Buttons -->
@@ -46,6 +46,19 @@ const emit = defineEmits(['daily', 'practice'])
           >PRACTICE MODE</span
         >
       </button>
+    </div>
+
+    <!-- Credits -->
+    <div class="z-10 mt-8 text-center">
+      <p class="text-[#56687e] text-sm font-medium">
+        A geo-guessing game by
+        <a
+          href="https://dustinmichels.com/"
+          target="_blank"
+          class="underline hover:text-[#007aff] transition-colors"
+          >Dustin Michels</a
+        >
+      </p>
     </div>
 
     <!-- Footer decoration (optional) -->
