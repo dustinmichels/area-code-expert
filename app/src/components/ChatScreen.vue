@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick, watch } from 'vue'
+import { ref, onMounted, computed, nextTick, watch, onUnmounted } from 'vue'
 import statesData from '../assets/states.json'
 
 // Define emits
@@ -34,6 +34,30 @@ const chatContainer = ref<HTMLElement | null>(null)
 const isGameOver = ref(false)
 const hintUsed = ref(false)
 
+// Timer Logic
+const elapsedTime = ref(0)
+let timerInterval: ReturnType<typeof setInterval> | null = null
+
+const formattedTimer = computed(() => {
+  const m = Math.floor(elapsedTime.value / 60)
+  const s = elapsedTime.value % 60
+  return `${m}:${s.toString().padStart(2, '0')}`
+})
+
+const startTimer = () => {
+  stopTimer()
+  timerInterval = setInterval(() => {
+    elapsedTime.value++
+  }, 1000)
+}
+
+const stopTimer = () => {
+  if (timerInterval) {
+    clearInterval(timerInterval)
+    timerInterval = null
+  }
+}
+
 const revealHint = (msg: Message) => {
   if (msg.isBlurred) {
     msg.isBlurred = false
@@ -54,6 +78,7 @@ watch(isTyping, scrollToBottom)
 const states = statesData.states
 
 onMounted(() => {
+  startTimer()
   if (props.contact) {
     messages.value = [
       {
@@ -64,6 +89,10 @@ onMounted(() => {
       },
     ]
   }
+})
+
+onUnmounted(() => {
+  stopTimer()
 })
 
 const formattedPhone = computed(() => {
@@ -118,6 +147,7 @@ const sendMessage = () => {
   setTimeout(() => {
     isTyping.value = false
     isGameOver.value = true // Game End after 1 guess
+    stopTimer()
 
     if (isCorrect) {
       messages.value.push({
@@ -167,12 +197,12 @@ const sendMessage = () => {
         {{ props.contact?.name || '...' }}
       </h1>
 
-      <!-- Edit Button -->
-      <button
-        class="border border-[#324f73] rounded-[5px] text-white font-bold text-[12px] px-[12px] py-[5px] shadow-[0_1px_0_rgba(255,255,255,0.2),inset_0_1px_1px_rgba(255,255,255,0.2)] bg-[linear-gradient(to_bottom,#7a94b8_0%,#526f96_50%,#4a6890_51%,#2f4f7d_100%)] [text-shadow:0_-1px_0_rgba(0,0,0,0.6)] cursor-pointer active:brightness-90"
+      <!-- Timer Display -->
+      <div
+        class="text-white font-bold text-[13px] w-[50px] text-right pr-2 [text-shadow:0_-1px_0_rgba(0,0,0,0.6)] tabular-nums"
       >
-        Edit
-      </button>
+        {{ formattedTimer }}
+      </div>
     </div>
 
     <!-- Content Area -->

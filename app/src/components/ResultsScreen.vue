@@ -21,7 +21,15 @@ const hintCount = computed(() => props.results.filter((r) => r === 'yellow').len
 const incorrectCount = computed(() => props.results.filter((r) => r === 'red').length)
 
 const shareResults = () => {
-  const text = `I got ${correctCount.value} correct, ${hintCount.value} with a hint, and ${incorrectCount.value} incorrect on Area Code Hero!`
+  const emojiMap: Record<string, string> = {
+    green: '🟢',
+    yellow: '🟡',
+    red: '🔴',
+  }
+  const emojiString = props.results.map((r) => emojiMap[r] || '⚪').join('')
+
+  const text = `AreaCodeExpert #1\n${emojiString}\nhttps://area-code-expert.netlify.app/`
+
   if (navigator.share) {
     navigator.share({
       title: 'Area Code Hero Results',
